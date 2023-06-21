@@ -19,6 +19,10 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <lstate.h>
 
 #include <stdlib.h>
@@ -47,3 +51,7 @@ int bl_pushresult(lua_State *L, int i, const char *filename);
 int bl_pusherror(lua_State *L, const char *msg);
 int bl_pusherror1(lua_State *L, const char *msg, const char *arg1);
 int bl_pusherror2(lua_State *L, const char *msg, const char *arg1, int arg2);
+
+#ifdef __cplusplus
+}
+#endif

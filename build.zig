@@ -117,8 +117,13 @@ const third_party_c_files = [_][]const u8 {
     "src/lz4/lz4/xxhash.c",
 };
 
+const third_party_cpp_files = [_][]const u8 {
+    "src/linenoise/linenoise/linenoise.cpp",
+    "src/linenoise/linenoise/wcwidth.cpp",
+    "src/linenoise/linenoise/ConvertUTF.cpp",
+};
+
 const linux_third_party_c_files = [_][]const u8 {
-    "src/linenoise/linenoise/linenoise.c",
     "src/socket/luasocket/serial.c",
     "src/socket/luasocket/unixdgram.c",
     "src/socket/luasocket/unixstream.c",
@@ -172,6 +177,7 @@ pub fn build(b: *std.build.Builder) !void {
     exe.setTarget(target);
     exe.setBuildMode(mode);
     exe.linkLibC();
+    exe.linkLibCpp();
     exe.install();
     exe.addIncludePath(src_path);
     exe.addIncludePath(lz4_src);
@@ -238,6 +244,14 @@ pub fn build(b: *std.build.Builder) !void {
         if (target.os_tag == std.Target.Os.Tag.linux) "-DLUA_USE_LINUX" else "",
         if (target.os_tag == std.Target.Os.Tag.macos) "-DLUA_USE_MACOSX" else "",
     });
+    exe.addCSourceFiles(&third_party_cpp_files, &[_][]const u8 {
+        "-std=c++11",
+        "-O3",
+        "-Wno-documentation",
+        "-DLUA_LIB",
+        if (target.os_tag == std.Target.Os.Tag.linux) "-DLUA_USE_LINUX" else "",
+        if (target.os_tag == std.Target.Os.Tag.macos) "-DLUA_USE_MACOSX" else "",
+    });
     if (target.os_tag == std.Target.Os.Tag.windows) {
         exe.addCSourceFiles(&windows_third_party_c_files, &[_][]const u8 {
             "-std=gnu11",
@@ -269,6 +283,7 @@ pub fn build(b: *std.build.Builder) !void {
     lib_shared.setTarget(target);
     lib_shared.setBuildMode(mode);
     lib_shared.linkLibC();
+    lib_shared.linkLibCpp();
     lib_shared.install();
     lib_shared.addIncludePath(src_path);
     lib_shared.addIncludePath(build_path);
@@ -317,6 +332,14 @@ pub fn build(b: *std.build.Builder) !void {
         if (target.os_tag == std.Target.Os.Tag.linux) "-DLUA_USE_LINUX" else "",
         if (target.os_tag == std.Target.Os.Tag.macos) "-DLUA_USE_MACOSX" else "",
         //if (target.os_tag == std.Target.Os.Tag.windows) "-DLUA_BUILD_AS_DLL" else "",
+    });
+    lib_shared.addCSourceFiles(&third_party_cpp_files, &[_][]const u8 {
+        "-std=c++11",
+        "-O3",
+        "-Wno-documentation",
+        "-DLUA_LIB",
+        if (target.os_tag == std.Target.Os.Tag.linux) "-DLUA_USE_LINUX" else "",
+        if (target.os_tag == std.Target.Os.Tag.macos) "-DLUA_USE_MACOSX" else "",
     });
     if (target.os_tag == std.Target.Os.Tag.windows) {
         lib_shared.addCSourceFiles(&windows_third_party_c_files, &[_][]const u8 {

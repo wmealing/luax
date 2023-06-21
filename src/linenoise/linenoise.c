@@ -31,6 +31,7 @@ The history can not be saved on Windows.
 #include "linenoise.h"
 
 #include <stdbool.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "lua.h"
@@ -50,7 +51,6 @@ The history can not be saved on Windows.
 #endif
 
 #ifdef HAS_LINENOISE
-static int mask_mode = 0;
 static bool running_in_a_tty = true;
 #endif
 
@@ -65,11 +65,17 @@ static int linenoise_read(lua_State *L)
 {
     const char *prompt = luaL_checkstring(L, 1);
 #ifdef HAS_LINENOISE
+    static bool resize_handler_installed = false;
+    if (!resize_handler_installed)
+    {
+        linenoiseInstallWindowChangeHandler();
+        resize_handler_installed = true;
+    }
     char *line = linenoise(prompt);
     if (line != NULL)
     {
         lua_pushstring(L, line);
-        linenoiseFree(line);
+        free(line);
     }
     else
     {
@@ -89,29 +95,6 @@ static int linenoise_read(lua_State *L)
     }
 #endif
     return 1;
-}
-
-/*@@@
-```lua
-linenoise.read_mask(prompt)
-```
-is the same as `linenoise.read(prompt)`
-but the characters are not echoed but replaced with `*`.
-@@@*/
-
-static int linenoise_read_mask(lua_State *L)
-{
-#ifdef HAS_LINENOISE
-    linenoiseMaskModeEnable();
-#endif
-    const int n = linenoise_read(L);
-#ifdef HAS_LINENOISE
-    if (!mask_mode)
-    {
-        linenoiseMaskModeDisable();
-    }
-#endif
-    return n;
 }
 
 /*@@@
@@ -232,42 +215,15 @@ static int linenoise_set_multi_line(lua_State *L)
     return 0;
 }
 
-/*@@@
-```lua
-linenoise.mask(b)
-```
-enable/disable the mask mode.
-@@@*/
-
-static int linenoise_mask_mode(lua_State *L)
-{
-#ifdef HAS_LINENOISE
-    mask_mode = (int)luaL_checkinteger(L, 1);
-    if (mask_mode)
-    {
-        linenoiseMaskModeEnable();
-    }
-    else
-    {
-        linenoiseMaskModeDisable();
-    }
-#else
-    (void)L;
-#endif
-    return 0;
-}
-
 static const luaL_Reg linenoiselib[] =
 {
     {"read",        linenoise_read},
-    {"read_mask",   linenoise_read_mask},
     {"add",         linenoise_history_add},
     {"set_len",     linenoise_history_set_len},
     {"save",        linenoise_history_save},
     {"load",        linenoise_history_load},
     {"clear",       linenoise_clear_screen},
     {"multi_line",  linenoise_set_multi_line},
-    {"mask",        linenoise_mask_mode},
     {NULL, NULL}
 };
 

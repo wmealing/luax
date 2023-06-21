@@ -237,7 +237,7 @@ LMATHX_URL = https://web.tecgraf.puc-rio.br/~lhf/ftp/lua/5.3/$(LMATHX_ARCHIVE)
 
 LINENOISE_VERSION = master
 LINENOISE_ARCHIVE = linenoise-$(LINENOISE_VERSION).zip
-LINENOISE_URL = https://github.com/antirez/linenoise/archive/refs/heads/$(LINENOISE_VERSION).zip
+LINENOISE_URL = https://github.com/arangodb/linenoise-ng/archive/refs/heads/$(LINENOISE_VERSION).zip
 
 LUASOCKET_VERSION = 3.1.0
 LUASOCKET_ARCHIVE = luasocket-$(LUASOCKET_VERSION).zip
@@ -329,13 +329,13 @@ $(BUILD_TMP)/$(LMATHX_ARCHIVE):
 update-linenoise: $(BUILD_TMP)/$(LINENOISE_ARCHIVE)
 	rm -rf src/linenoise/linenoise
 	mkdir src/linenoise/linenoise
-	unzip -j $< -x '*/.gitignore' '*/Makefile' '*/example.c' -d src/linenoise/linenoise
+	unzip -j $< -x '*/.gitignore' '*/.clang-format' '*/Makefile' '*/CMakeLists.txt' '*/appveyor.yml' '*/README.md' '*/example.c' -d src/linenoise/linenoise
 	sed -i -e 's/case ENTER:/case ENTER: case 10:/'                         \
 	       -e 's/malloc(/safe_malloc(/'                                     \
 	       -e 's/realloc(/safe_realloc(/'                                   \
 	       -e 's/\(#include "linenoise.h"\)/\1\n\n#include "tools.h"/'      \
 	       -e 's/TCSAFLUSH/TCSADRAIN/'                                      \
-	       src/linenoise/linenoise/linenoise.c
+	       src/linenoise/linenoise/linenoise.cpp
 
 $(BUILD_TMP)/$(LINENOISE_ARCHIVE):
 	@mkdir -p $(dir $@)
