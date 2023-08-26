@@ -140,6 +140,7 @@ local function deserialize(data, opts)
   local f, res = load('return '..data, nil, nil, env)
   if not f then f, res = load(data, nil, nil, env) end
   if not f then return f, res end
+  if setfenv then setfenv(f, env) end
   return pcall(f)
 end
 

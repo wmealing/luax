@@ -14,8 +14,8 @@
 -Wno-declaration-after-statement
 -Wno-unsafe-buffer-usage
 -Isrc
--Isrc/lz4/lz4
--Ilua
+-I.
+-Iext/lua
 -I.build/tmp
 -DRUNTIME_NAME=lrun
 -DRUNTIME=1
