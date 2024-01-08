@@ -62,11 +62,11 @@ rule mkdir
   description = MKDIR $out
   command = mkdir -p $out
 
-zig = .zig/0.11.0/zig
+zig = .zig/0.12.0/zig
 
 rule _zig
   description = GET zig 0.11.0
-  command = $in 0.11.0 $out
+  command = $in 0.12.0-dev.2063+804cee3b9 $out
   pool = console
 
 build $zig: _zig tools/install_zig.sh

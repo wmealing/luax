@@ -24,6 +24,7 @@ case "$ARCH" in
     (i486)  ARCH=x86 ;;
     (i586)  ARCH=x86 ;;
     (i686)  ARCH=x86 ;;
+    (arm64) ARCH=aarch64 ;;
 esac
 
 case "$(uname -s)" in
@@ -36,6 +37,10 @@ esac
 LIBC=gnu
 
 case "$OS" in
+	(macos) LIBC=none ;; 
+esac
+
+case "$OS" in
     (windows) EXT=".exe" ;;
     (*)       EXT="" ;;
 esac
@@ -45,12 +50,11 @@ export OS
 export LIBC
 export EXT
 
+
 case "$OS" in
     (linux) LUA_CFLAGS="-DLUA_USE_LINUX" ;;
     (macos) LUA_CFLAGS="-DLUA_USE_MACOSX" ;;
     (*)     LUA_CFLAGS="" ;;
 esac
-
-export LUA_CFLAGS
 
 export CRYPT_KEY=${CRYPT_KEY:-"LuaX"}

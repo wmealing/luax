@@ -207,8 +207,8 @@ local compiler_deps = {}
 case(compiler) {
 
     zig = function()
-        local zig_version = "0.11.0"
-        --local zig_version = "0.12.0-dev.1746+19af8aac8"
+        -- local zig_version = "0.11.0"
+        local zig_version = "0.12.0-dev.1746+19af8aac8"
         var "zig" (".zig" / zig_version / "zig")
 
         build "$zig" { "tools/install_zig.sh",
